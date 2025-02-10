@@ -12,11 +12,16 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded = false;
     private bool jump = false;
     private Rigidbody2D body;
+    private float fireRate=0.3f;
+    private float nextFire;
 
     public float gravMult = 2f;
     public float jumpForce;
     public float speed;
     public float maxSpeed = 7f;
+    public GameObject fire;
+    public Transform firePoint;
+
     void Start()
     {
         animator = GetComponent<Animator>();
@@ -66,6 +71,15 @@ public class PlayerController : MonoBehaviour
         {
             jump = true;
         }
+    }
+
+    public void OnFire()
+    {
+        if (Time.time>=nextFire) { 
+        nextFire = Time.time+fireRate;
+        animator.SetTrigger("isShooting");
+        Instantiate(fire, firePoint.position, firePoint.rotation);
+    }
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
