@@ -14,6 +14,8 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D body;
     private float fireRate=0.3f;
     private float nextFire;
+    private bool facingRight = true;
+    private AudioSource audioSource;
 
     public float gravMult = 2f;
     public float jumpForce;
@@ -27,6 +29,7 @@ public class PlayerController : MonoBehaviour
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         body = GetComponent<Rigidbody2D>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -34,16 +37,24 @@ public class PlayerController : MonoBehaviour
         animator.SetFloat("speed", Mathf.Abs(movementVector.x));
         if (movementVector.x > 0 && body.velocity.x<maxSpeed)
         {
-            spriteRenderer.flipX = false;
             //transform.Translate(Vector2.right * speed * Time.deltaTime);
             body.AddForce(Vector2.right * speed);
 
         }
         else if (movementVector.x < 0 && Mathf.Abs(body.velocity.x)<maxSpeed)
         {
-            spriteRenderer.flipX = true;
             //transform.Translate(Vector2.left * speed * Time.deltaTime);
             body.AddForce(Vector2.left * speed);
+        }
+
+        if (movementVector.x > 0 && !facingRight)
+        {
+            Flip();
+            facingRight = true;
+        }
+        else if (movementVector.x < 0 && facingRight) {
+            Flip();
+            facingRight = false;
         }
         if (jump)
         {
@@ -78,8 +89,23 @@ public class PlayerController : MonoBehaviour
         if (Time.time>=nextFire) { 
         nextFire = Time.time+fireRate;
         animator.SetTrigger("isShooting");
-        Instantiate(fire, firePoint.position, firePoint.rotation);
+        audioSource.Play();
+        Instantiate(fire, firePoint.position, facingRight? firePoint.rotation:Quaternion.Euler(0,180,0));
     }
+    }
+
+    public Vector2 GetDirection() {
+        if (facingRight) 
+        return Vector2.right;
+        else 
+        return Vector2.left;
+
+    }
+
+    void Flip() { 
+        Vector3 theScale=transform.localScale;
+        theScale.x*=-1;
+        transform.localScale = theScale;
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
