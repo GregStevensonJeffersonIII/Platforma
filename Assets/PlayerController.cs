@@ -111,6 +111,11 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Ground"))
             isGrounded = true;
+        else if (collision.gameObject.CompareTag("Enemy"))
+        {
+            GameManager.instance.DecreaseLives();
+            SceneManager.LoadScene(0);
+        }
     }
 
     IEnumerator LerpJump()
@@ -130,6 +135,11 @@ public class PlayerController : MonoBehaviour
         {
             GameManager.instance.DecreaseLives();
             SceneManager.LoadScene(0);
+        }
+        else if (collision.gameObject.CompareTag("Barry"))
+        {
+            GameManager.instance.Win();
+            Destroy(collision.gameObject);
         }
     }
 }

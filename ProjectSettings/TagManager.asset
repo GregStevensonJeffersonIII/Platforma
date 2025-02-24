@@ -8,6 +8,7 @@ TagManager:
   - Boundry
   - Fire
   - Enemy
+  - Barry
   layers:
   - Default
   - TransparentFX
